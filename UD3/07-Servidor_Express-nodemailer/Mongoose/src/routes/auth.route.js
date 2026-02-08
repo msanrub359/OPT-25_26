@@ -10,6 +10,7 @@ const router = Router()
 router.post('/register', validarRegistro, register);
 router.post('/login', validarLogin, login);
 router.post('/refresh-token', refreshToken);
-router.get('/activa-email/:token', activaCuenta);
+
+
 
 export { router as authRoutes };
