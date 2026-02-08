@@ -13,21 +13,18 @@ export const register = async (req, res) => {
         const hashPassword = await bcrypt.hash(password, saltRounds);
 
         // Crear token de activación provisional para la activación de la cuenta.
-        const activacionToken = generarAccessToken({ email }); // Token temporal de 15 minutos
+      
         // Crear nuevo usuario 
         const nuevoUsuario = await Usuario.create({
             name,
             email,
             password: hashPassword,
             role: role || 'Usuario',
-            active: active !== undefined ? active : false,
-            activacionToken: activacionToken,
-            activacionTokenExpira: Date.now() + 24 * 60 * 60 * 1000 // Expira en 24 horas
+            active: active !== undefined ? active : false
         });
         
         //enviar email de activación
-        const html=contenidoHTML(email, name, activacionToken);
-         await enviarEmailActivacion(email, 'Token verificación', html);
+       
 
         // Preparar payload para los tokens (SIN password)
         const payload = {
@@ -194,8 +191,7 @@ export const refreshToken = async (req, res) => {
 
 // construir el contenido HTML del email de activación
 const contenidoHTML = (email, name, tokenActivacion) => {
-    const urlActivacion = `${process.env.URL}:${process.env.PORT}/api/activa-email/${tokenActivacion}`;
-   console.log(urlActivacion);
+    
     return `
             <!DOCTYPE html>
             <html>
@@ -244,28 +240,12 @@ const contenidoHTML = (email, name, tokenActivacion) => {
 
 export const activaCuenta = async (req, res) => {
      try {
-       
-         const { token } = req.params;  
-         console.log(token);     
-         const usuario = await Usuario.findOne({ activacionToken: token });
-
-        if (!usuario) {
-             return res.status(400).json({ message: 'Token de activación inválido' });
-         }   
-         if (usuario.active) {
-             return res.status(400).json({ message: 'La cuenta ya está activa' });
-         }               
-         if (usuario.activacionTokenExpira < Date.now()) {
-             return res.status(400).json({ message: 'El token de activación ha expirado' });
-         }  
+           
             
-         usuario.active = true;
-         usuario.activacionToken = undefined;
-         usuario.activacionTokenExpira = undefined;
-         await usuario.save();               
-        res.status(200).json({ message: 'Cuenta activada exitosamente. Ya puedes iniciar sesión.' });
+         
      } catch (error) {
          console.error('Error al activar cuenta:', error);
          res.status(500).json({ message: 'Error al activar la cuenta' });
      }           
 };
+
