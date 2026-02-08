@@ -36,16 +36,8 @@ export const Usuario = mongoose.model('Usuario', new mongoose.Schema({
   active: {
     type: Boolean,
     default: false
-  },
-  activacionToken: {
-    type: String,
-    required: false,
-
-  },
-  activacionTokenExpira: {
-    type: Date,
-    required: false
   }
+  
 },
   {
     timestamps: false,
@@ -53,3 +45,4 @@ export const Usuario = mongoose.model('Usuario', new mongoose.Schema({
     versionKey: false
 
   }));
+
